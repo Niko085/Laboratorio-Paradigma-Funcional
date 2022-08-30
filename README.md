@@ -1,2 +1,2 @@
 # Laboratorio-Paradigma-Funcional
-Creación de unprograma estilo Photoshop.
+Creación de unprograma estilo Photoshop...
