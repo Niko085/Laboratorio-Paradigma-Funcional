@@ -19,7 +19,12 @@
                   (* n n)
   ))
 
-
+(define (milist))
+;Contar elementos de una lista
+(define (contarElem lista cont)
+  (if (null? lista)
+     cont
+     (contarElem(cdr lista)(+ 1 cont))))
 
 
 ; Dominio: 
@@ -27,10 +32,10 @@
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
 ; Tipo de recursion: No se utiliza recursion
 ;(define Img1 (image 2 2
-;                   (pixrgb-d 0 0 255 0 0 10)
-;                    (pixrgb-d 0 1 0 255 0 20)
-;                    (pixrgb-d 1 0 0 0 255 10)
-;                    (pixrgb-d 1 1 255 255 255 1)
+;                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0
+;                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
+;                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
+;                   (pixrgb-d 1 1 255 255 255 1) FFFFFF toma 255 255 255
 ;  ))
 
 
