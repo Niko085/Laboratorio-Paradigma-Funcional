@@ -1,5 +1,7 @@
 #lang racket
 
+(require "bitmap.rkt")
+
 ;-----------------------------------TDA Image------------------------------------------------------------------------
 
 ;-----------------------------------REPRESENTACION--------------------------------------------------------------------
@@ -19,7 +21,57 @@
                   (* n n)
   ))
 
-(define (milist))
+
+
+
+
+
+
+
+
+
+
+(define (image ancho alto . pixeles)
+  (list ancho alto pixeles))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;Contar elementos de una lista
 (define (contarElem lista cont)
   (if (null? lista)
@@ -27,6 +79,21 @@
      (contarElem(cdr lista)(+ 1 cont))))
 
 
+
+
+(define (contar lista)
+  (cond
+    [(null? lista) 0]
+    [else (+ 1 (contar (cdr lista)))]))
+
+
+(define (pixrgb-d  a b c d e f)
+  (cond
+    [(< 1 2) list a]))
+
+(contar(list (pixrgb-d  0 0 10 10 10 10) 'suscribete 'like))
+
+;(define imagen a)
 ; Dominio: 
 ; Recorrido: 
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
@@ -37,6 +104,31 @@
 ;                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
 ;                   (pixrgb-d 1 1 255 255 255 1) FFFFFF toma 255 255 255
 ;  ))
+
+;(image 2 2 (pixrgb-d  0 0 10 10 10 10) (pixrgb-d  0 1 20 20 20 20) (pixrgb-d 1 0 30 30 30 30) (pixrgb-d 1 1 40 40 40 40))
+;(image 2 2 (pixrgb-d  0 0 10 10 10 10) (pixrgb-d  0 1 20 20 20 20) (pixrgb-d 1 0 30 30 30 30) (pixrgb-d 1 1 40 40 40 40))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ; Dominio: 
@@ -54,4 +146,10 @@
 ;  )
 
 ;-----------------------------------OTRAS FUNCIONES-------------------------------------------------------------------
+
+
+
+
+;Esta función se usa para usar el TDA en otros arcivos
+(provide (all-defined-out))
 
