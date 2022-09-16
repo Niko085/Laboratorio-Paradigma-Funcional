@@ -1,0 +1,5 @@
+#lang racket
+
+(define (pixrgb-d a b c d e f))
+
+(provide (all-defined-out)) 

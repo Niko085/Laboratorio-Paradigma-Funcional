@@ -1,5 +1,32 @@
 #lang racket
-; Se requiere el uso del TDA image
-(require "TDAImage.rkt")
+;Función requerida por el TDA Image
 
-(define (pixhex-d a b c d e f))
+; Dominio: posicionx (int) X posiciony (int) X hex(String) X Profundidad (int)
+; Recorrido: Int
+; Descripcion: Crea un pixel de tipo hexmap
+; Tipo de recursion: No se utiliza recursion
+(define (pixhex-d posicionX posicionY color profundidad)
+  (list posicionX posicionY color profundidad ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(provide (all-defined-out))

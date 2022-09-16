@@ -1,5 +1,9 @@
 #lang racket
 
+(require "bitmap.rkt")
+(require "hexmap.rkt")
+(require "pixmap.rkt")
+
 ;-----------------------------------TDA Image------------------------------------------------------------------------
 
 ;-----------------------------------REPRESENTACION--------------------------------------------------------------------
@@ -15,22 +19,31 @@
 
 ;hexmap -> pixhex-d
 
-(define tamanio (lambda (n)
-                  (* n n)
+(define tamanio (lambda (n1 n2)
+                  (* n1 n2)
   ))
 
 
 
 
+
+
+
+
+
+
+(define (image ancho alto . pixeles)
+  (list ancho alto pixeles))
+
+
+;Acceder a una posicion de una lista
+(define (acceder lista posicion)
+  (cond
+    [(= 0 posicion) (car lista)]
+    [else (acceder (cdr lista) (- posicion 1))]))
+
+
 ;Contar elementos de una lista
-(define (contarElem lista cont)
-  (if (null? lista)
-     cont
-     (contarElem(cdr lista)(+ 1 cont))))
-
-
-
-
 (define (contar lista)
   (cond
     [(null? lista) 0]
@@ -38,9 +51,24 @@
 
 
 
-(contar(list (pixrgb-d  0 0 10 10 10 10) 'suscribete 'like))
+;pruebas
+(contar (image 1 2 3 4))
 
 
+
+
+
+
+
+
+
+
+(define (pixrgb-d  a b c d e f)
+  (cond
+    [(< 1 2) list a]))
+
+
+;(define imagen a)
 ; Dominio: 
 ; Recorrido: 
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
@@ -97,6 +125,6 @@
 
 
 
-;Esta función se usa para usar el TDA en otros arcivos
+;Esta función es utilizada para hacer uso del TDA en el archivo main.rkt
 (provide (all-defined-out))
 

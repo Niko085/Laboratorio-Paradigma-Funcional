@@ -1,12 +1,40 @@
 #lang racket
-; Se requiere el uso del TDA image
+;Función requerida por el TDA Image
+
+; Dominio: posicionx (int) X posiciony (int) X bit([0|1]) X Profundidad (int)
+; Recorrido: Int
+; Descripcion: Crea un pixel de tipo bitmap
+; Tipo de recursion: No se utiliza recursion
+(define (pixbit-d posicionX posicionY bit profundidad)
+  (list posicionX posicionY bit profundidad ))
 
 
-(define (pixbit-d a b c d e f)
-  (list a b c d e f ))
+(define (acceder lista posicion)
+  (cond
+    [(= 0 posicion) (car lista)]
+    [else (acceder (cdr lista) (- posicion 1))]))
 
-(define (pixrgb-d g h i j k l)
-  (list g h i j k l ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 (provide (all-defined-out))
