@@ -9,10 +9,7 @@
   (list posicionX posicionY bit profundidad ))
 
 
-(define (acceder lista posicion)
-  (cond
-    [(= 0 posicion) (car lista)]
-    [else (acceder (cdr lista) (- posicion 1))]))
+
 
 
 
