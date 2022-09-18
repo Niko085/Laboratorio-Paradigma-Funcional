@@ -84,8 +84,10 @@
 ;comprueba si una imagen es de formato bitmap. Retorna #t si es bit, de lo contrario retorna #f
 (define (bitmap? image)
   (cond
-    [(= (revisarLista_bit (acceder image 2) 0 2) 1) #t];Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
-    [else #f]))
+    [(not (= (contar (acceder (acceder image 2) 0)) 4)) #f]
+    [(= (revisarLista_bit (acceder image 2) 0 2) 1) #t]
+    [else #f]));Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
+    
 
 ;(contar (acceder (image 5 3 (pixbit-d 0 0 1 0) (pixbit-d 1 6 0 1)) 2))
 
@@ -111,7 +113,7 @@
 
 ;--------------------------------------------------Pixmap?----------------------------------------------------
 
-;retorna 0 si no es bit y retorna 1 si es bit el numero revisado
+;retorna 0 si no es pix, y retorna 1 en caso de si serlo
 (define (pix? pix)
   (cond
     [(and (<= 0 pix) (>= 255 pix)) 1]
@@ -119,15 +121,15 @@
 
 
 
-;Llega hasta la posicion 3 (donde esta el bit) y llama a la funcion bit? para revisar si es un bit
+;Revisa las posiciones 2, 3 y 4 de cada lista comprobando si es un pixel válido (Esas son las posiciones porque el contador parte de 0)
 (define (revisar_SubListas_pix lista contador)
   (cond
-    [(= contador 2) (pix? (car lista))]
-    [else (revisar_SubListas_bit (cdr lista) (+ contador 1))]))
+    [(and (= 1 (pix? (acceder lista 2))) (= 1 (pix? (acceder lista 3))) (= 1 (pix? (acceder lista 4)))) 1]
+    [else 0]))
 
 
 
-;revisa la lista con sublistas
+;revisa la lista con sublistas ej: '((1 2 3 4) (5 6 7 8))
 (define (revisarLista_pix lista contador revisado) ;El valor inicial de revisado debe ser mayor que 0, en este caso se usa 2
   (if (or (null? lista) (= revisado 0)) 
       revisado
@@ -135,31 +137,69 @@
 
 
 
-;comprueba si una imagen es de formato bitmap. Retorna #t si es bit, de lo contrario retorna #f
+;comprueba si una imagen es de formato pixmap. Retorna #t si es pix, de lo contrario retorna #f
 (define (pixmap? image)
   (cond
-    [(= (revisarLista_pix (acceder image 2) 0 2) 1) #t];Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
-    [else #f]))
+    [(not (= (contar (acceder (acceder image 2) 0)) 6)) #f]
+    [(= (revisarLista_pix (acceder image 2) 0 2) 1) #t]
+    [else #f]));Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
+   
 
 ;(contar (acceder (image 5 3 (pixrgb-d 0 0 1 0 0 9) (pixrgb-d 1 6 0 8 0 1)) 2))
 
-(pixmap? (image 5 3 (pixrgb-d 0 0 9 9 1 0) (pixrgb-d 9 8 1 6 0 1)))
+;(pixmap? (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+
+
+
+;(pix? (acceder '(1 2 3 4) 0))
+;(pix? (acceder '(1 2 3 4) 1))
+;(pix? (acceder '(1 2 3 4) 2))
+;(pix? (acceder '(1 2 3 256) 3))
 ;-------------------------------------------------------------------------------------------------------------
 
 
+;--------------------------------------------------Hexmap?----------------------------------------------------
+;retorna 0 si no es hex, y retorna 1 en caso de si serlo
+(define (hex? hex)
+  (cond
+    [(string? hex) 1]
+    [else 0]))
 
 
 
+;Revisa las posiciones 2, 3 y 4 de cada lista comprobando si es un pixel válido (Esas son las posiciones porque el contador parte de 0)
+(define (revisar_SubListas_hex lista contador)
+  (cond
+    [(and (= 1 (hex? (acceder lista 2)))) 1]
+    [else 0]))
+
+
+;revisa la lista con sublistas ej: '((1 2 3 4) (5 6 7 8))
+(define (revisarLista_hex lista contador revisado) ;El valor inicial de revisado debe ser mayor que 0, en este caso se usa 2
+  (if (or (null? lista) (= revisado 0)) 
+      revisado
+      (revisarLista_hex (cdr lista) (+ contador 1) (revisar_SubListas_hex (car lista) 0))))
+
+
+;comprueba si una imagen es de formato hexmap. Retorna #t si es hex, de lo contrario retorna #f
+(define (hexmap? image)
+  (cond
+    [(not (= (contar (acceder (acceder image 2) 0)) 4)) #f]
+    [(= (revisarLista_hex (acceder image 2) 0 2) 1) #t]
+    [else #f]));Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
+;-------------------------------------------------------------------------------------------------------------------
 
 
 
+;----------------------------------------------------Compressed?----------------------------------------------------
+
+;-------------------------------------------------------------------------------------------------------------------
 
 
+;-------------------------------------------------------flipH-------------------------------------------------------
 
 
-
-
-
+;-------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -199,7 +239,7 @@
 ; Recorrido: 
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
 ; Tipo de recursion: No se utiliza recursion
-(define Img1 (image 2 2
+(define img1 (image 2 2
                    (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0
                    (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
                    (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
@@ -207,6 +247,12 @@
   ))
 
 ;(image 5 2 (pixrgb-d  0 0 10 10 10 10) (pixrgb-d  0 1 20 20 20 20) (pixrgb-d 1 0 30 30 30 30) (pixrgb-d 1 1 40 40 40 40))
+(define img2 (image 2 2
+                  (pixbit-d 0 0 0 10)
+                  (pixbit-d 0 1 1 20)
+                  (pixbit-d 1 0 1 10)
+                  (pixbit-d 1 1 0 255)
+ ))
 
 
 
