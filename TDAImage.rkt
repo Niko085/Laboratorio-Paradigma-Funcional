@@ -19,10 +19,6 @@
 
 ;hexmap -> pixhex-d
 
-(define tamanio (lambda (n1 n2)
-                  (* n1 n2)
-  ))
-
 
 
 
@@ -193,8 +189,29 @@
 
 ;----------------------------------------------------Compressed?----------------------------------------------------
 
+;Multiplica el largo por el ancho de una imagen
+(define (tamanio lista )
+  (* (acceder lista 0) (acceder lista 1)))
+
+
+;(tamanio (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+
+
+;Comprueba que la cantidad de pixeles no haya sido comprimida. Retorna #f si no está comprimida, retorna #t si esta comprimida y da aviso en caso de haber ingresado mas pixeles de los que debería
+(define (compressed? image)
+  (cond
+    [(< (tamanio image) (contar (acceder image 2))) print "Hay mas pixeles que el tamanio declarado"]
+    [(= (tamanio image) (contar (acceder image 2))) #f];no comprimida
+    [else #t]));compimida
+
+;pruebas
+(compressed? (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+
+(compressed? (image 1 2 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+
 ;-------------------------------------------------------------------------------------------------------------------
 
+(cons 5(cons 4 (cons 6 null)))
 
 ;-------------------------------------------------------flipH-------------------------------------------------------
 
@@ -230,7 +247,7 @@
 
 
 
-;----------------
+;------------------------------------------------------------------------------PRUEBAS--------------------------------------------------------------------
 
 ;(recorrerListas(image 5 3 (pixbit-d 0 0 0 0) (pixbit-d 1 6 1 1))0)
 
@@ -239,8 +256,22 @@
 ; Recorrido: 
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
 ; Tipo de recursion: No se utiliza recursion
-(define img1 (image 2 2
-                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0
+(define img1 (image 1 2
+                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0      ;mas elementos de los que debería
+                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
+                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
+                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
+  ))
+
+(define img3 (image 2 2
+                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0         ;#f
+                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
+                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
+                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
+  ))
+
+(define img4 (image 3 2
+                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0           ;#t
                    (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
                    (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
                    (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
