@@ -218,52 +218,16 @@
 ;(cons 5(cons 4 (cons 6 null)))
 
 
-;filas
-(define (invertir lista desde hasta ancho)
+(define (invertir lista contador salida)
   (cond
-    [(= desde hasta) (llamar_a_invertir lista hasta ancho)]
-    ;[(= desde hasta) empty]
-    [else (append (invertir (cdr lista) (- desde 1) hasta ancho) (list (car lista)))]))
-
-
-
-(define (llamar_a_invertir lista contador ancho)
-  (cond
-    [(null? lista) null]
-    [(= (modulo contador ancho) 0) (invertir lista (- contador 1) (- contador ancho) ancho)]))
-    ;[else (llamar_a_invertir (cdr lista) (- contador 1) ancho)]))
-
-
-
-
-
-;(define (inver lista contador)
- ; (cond
-  ;  [(= contador 4) lista]
-   ; [else (append (inver (cdr lista) (- contador 1)) (list (car lista)) )]))
-
-;(define (invers lista contador)
- ; (cond
-  ;  [(= contador 2) lista]
-   ; [else (append (invers (cdr lista) (- contador 1)) (list (car lista)) )]))
-
-;(define (ugu lista contador)
- ; (cond
-  ;  [(= contador 0) lista]
-   ; [else (append (ugu (cdr lista) (- contador 1)) (list (car lista)) )]))
-
-
-
-(define (inver lista contador decrecimiento)
-  (cond
-    [(= contador (- contador decrecimiento)) lista]
-    [else (append (inver (cdr lista) (- contador 1) decrecimiento) (list (car lista)))]))
+    [(= contador salida) lista]
+    [else (append (invertir (cdr lista) (- contador 1) salida) (list (car lista)) )]))
 
 
 (define (llamar lista cantidad contador)
  (cond
    [(= contador 0) lista]
-   [else (llamar (inver lista cantidad 2) (- cantidad 2) (- contador 1))]))
+   [else (llamar (invertir lista cantidad (- cantidad 2)) (- cantidad 2) (- contador 2))]))
    
 
 (list 0 1 2 3 4 5 6 7 8 9 10 11)
@@ -271,30 +235,24 @@
 (define l (list '(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)))
 ;(ugu (invers (inver '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6) 4) 2)
 
-;(llamar '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6 0)
-
-(llamar l 6 6)
-
-(define l1 (list '(1 2 3) '(4 5 6) '(7 8 9)))
-
-;(invertir l1 (contar l1))
 
 
-(define (conteo lista)
-  (cond
-    [(< 1 2) 0]))
+;(invers '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6)
+(llamar '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6 6)
+(llamar '((pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3)) 4 4)
 
 
-;ancho 0   3
-;alto 1    2
 
 (define (flipH lista)
   (cond
-    [(not (null? lista)) (llamar_a_invertir (acceder lista 2) (contar (acceder lista 2)) (acceder lista 0 ))]))
+    [(not (null? lista)) (llamar (acceder lista 2) (contar (acceder lista 2)) (* (acceder lista 1)(acceder lista 0 )))]))
 
-;(flipH (image 2 2 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3)))
+(flipH (image 2 2 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3)))
 ;1 0 3 2
 ;-------------------------------------------------------------------------------------------------------------------
+
+
+
 
 
 
