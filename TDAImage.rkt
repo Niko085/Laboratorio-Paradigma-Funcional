@@ -84,7 +84,7 @@
     [(= (revisarLista_bit (acceder image 2) 0 2) 1) #t]
     [else #f]));Se accede a la posicion 2 del la lista image porque corresponde a la lista formada después del punto por el constructor image
     
-(image 5 3 (pixbit-d 0 0 1 0) (pixbit-d 1 6 0 1))
+;(image 5 3 (pixbit-d 0 0 1 0) (pixbit-d 1 6 0 1))
 ;(contar (acceder (image 5 3 (pixbit-d 0 0 1 0) (pixbit-d 1 6 0 1)) 2))
 
 ;(bitmap? (image 5 3 (pixbit-d 0 0 1 0) (pixbit-d 1 6 0 1)))
@@ -203,58 +203,106 @@
   (cond
     [(< (tamanio image) (contar (acceder image 2))) print "Hay mas pixeles que el tamanio declarado"]
     [(= (tamanio image) (contar (acceder image 2))) #f];no comprimida
-    [else #t]));compimida
+    [(> (- (tamanio image) 1) (contar (acceder image 2))) print "No se puede volver a comprimir"]
+    [(= (- (tamanio image) 1) (contar (acceder image 2))) #t]));compimida
 
 ;pruebas
-(compressed? (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+;(compressed? (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
 
-(compressed? (image 1 2 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
+;(compressed? (image 1 2 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
 
 ;-------------------------------------------------------------------------------------------------------------------
 
 
 
 ;-------------------------------------------------------flipH-------------------------------------------------------
-;(cons 5(cons 4 (cons 6 null)))
+;Se generan todas las coordenadas posibles dependiendo del ancho y del alto
+(define (coordenadas ancho alto cont1 cont2 lista)
+  (cond
+    [(= alto cont1) (reverse lista)]
+    [(= ancho cont2) (coordenadas ancho alto (+ 1 cont1) 0 lista)]
+    ;[else (coordenadas ancho alto cont1 (+ 1 cont2) (cons (list cont1 cont2) lista))]))
+    [else (coordenadas ancho alto cont1 (+ 1 cont2) (cons cont2 (cons cont1 lista)))]))
+
+;Elimina un determinado elemento dentro de una lista
+(define (eliminar lista elemento)
+  (if (null? lista)
+      '()
+      (if (= (car lista) elemento)
+          (eliminar (cdr lista) -1);Se coloca el -1 para que la función deje de buscar el valor, ya que borra todos los elementos que sean igual al ingresado
+          (cons (car lista) (eliminar (cdr lista) elemento)))))
 
 
+;elimina las coordenadas de un pixel
+(define (eliminar_coordenadas lista contador)
+  (cond
+    [(< contador 1) (eliminar_coordenadas (eliminar lista (acceder lista 0)) (+ contador 1))]
+    [else lista]))
+
+;Cambia las coordenadas de un pixel
+(define (eliminar_e_insertar lista_coordenadas pixel contador posicion)
+  (cond
+    [(< contador 2) (eliminar_e_insertar lista_coordenadas (eliminar_coordenadas pixel 0) (+ contador 1) posicion)]
+    [else (cons (acceder lista_coordenadas posicion)(cons (acceder lista_coordenadas (+ posicion 1)) pixel))]))
+
+
+;(eliminar_coordenadas '(0 1 2 3 4) 0)
+
+;Llama a la función para eliminar las coordenadas anteriores y agregar las nuevas
+(define (entregar_coordenadas lista_coordenadas lista_pixeles cantidad contador contador2 nueva_lista)
+  (cond
+    [(and (not (= contador cantidad)) (<= contador2 (+ cantidad cantidad))) (entregar_coordenadas lista_coordenadas lista_pixeles cantidad (+ contador 1) (+ contador2 2) (cons (eliminar_e_insertar lista_coordenadas (acceder lista_pixeles contador) 0 contador2) nueva_lista))]
+    [else (reverse nueva_lista)]))
+
+
+
+;invierte un tramo de la lista y
 (define (invertir lista contador salida)
   (cond
     [(= contador salida) lista]
     [else (append (invertir (cdr lista) (- contador 1) salida) (list (car lista)) )]))
 
 
-(define (llamar lista cantidad contador)
+;LLama a la funcion invertir listas 
+(define (llamar_inversion lista cantidad contador ancho)
  (cond
    [(= contador 0) lista]
-   [else (llamar (invertir lista cantidad (- cantidad 2)) (- cantidad 2) (- contador 2))]))
-   
+   [else (llamar_inversion (invertir lista cantidad (- cantidad ancho)) (- cantidad ancho) (- contador ancho) ancho)]))
 
-(list 0 1 2 3 4 5 6 7 8 9 10 11)
-;(ugu (invers (inver '(0 1 2 3 4 5 6 7 8 9 10 11) 12) 8) 4)
-(define l (list '(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)))
-;(ugu (invers (inver '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6) 4) 2)
-
-
-
-;(invers '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6)
-(llamar '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5)) 6 6)
-(llamar '((pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3)) 4 4)
-
-
-
+;invierte una imagen horizontalmente
 (define (flipH lista)
   (cond
-    [(not (null? lista)) (llamar (acceder lista 2) (contar (acceder lista 2)) (* (acceder lista 1)(acceder lista 0 )))]))
+    [(not (null? lista)) (entregar_coordenadas (coordenadas (acceder lista 0) (acceder lista 1) 0 0 null) (llamar_inversion (acceder lista 2) (contar (acceder lista 2)) (tamanio lista) (acceder lista 0)) (contar (acceder lista 2)) 0 0 null)]))
 
-(flipH (image 2 2 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3)))
+(flipH (image 3 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5) (pixbit-d 6 6 6 6) (pixbit-d 7 7 7 7) (pixbit-d 8 8 8 8)))
 ;1 0 3 2
+
+(flipH (image 2 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5)))
+
+;-------------------------------------------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------flipV-------------------------------------------------------
+;LLama a la funcion invertir listas 
+(define (agrupar lista cantidad contador ancho)
+ (cond
+   [(= contador 0) lista]
+   [else (agrupar (invertir lista cantidad (- cantidad ancho)) (- cantidad ancho) (- contador ancho) ancho)]))
+
+;invierte una imagen horizontalmente
+(define (flipV lista)
+  (cond                       
+    [(not (null? lista)) (llamar_inversion (acceder lista 2) (contar (acceder lista 2)) (tamanio lista (acceder lista 0)))]))
+
+;(flipV (image 3 2 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5)))
+;3 4 5 0 1 2
 ;-------------------------------------------------------------------------------------------------------------------
 
 
 
 
 
+(list(cons '(1 2 3)(cons '(4 5 6) (cons '(7 8 9) null))))
 
 
 
@@ -273,6 +321,24 @@
 
 
 
+
+
+
+
+
+;(eliminar_coordenadas '(1 2 3 4 5 6 7 8 9) 0)
+
+
+
+
+;(eliminar '(1 2 3 4) 2)
+;(equal? '(1 2 3 45) '(1 2 3 45))
+;(equal? '(1 2 3 5) '(1 2 3 45))
+(define (lista x y z)
+  (list x y z))
+
+;(elimina '((0 0 0 0) (1 1 1 1) (2 2 2 2) (3 3 3 3) (4 4 4 4)) '(2 2 2 2) '((0 0 0 0) (1 1 1 1) (2 2 2 2) (3 3 3 3) (4 4 4 4)) 2)
+;(eliminar (lista 1 2 3) (acceder(lista 1 2 3) 0))
 
 
 
@@ -292,11 +358,11 @@
 ; Recorrido: 
 ; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
 ; Tipo de recursion: No se utiliza recursion
-(define img1 (image 1 2
-                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0      ;mas elementos de los que debería
-                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
-                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
-                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
+(define img1 (image 2 2
+                   (pixrgb-d 0 0 0 255 0 10) ;  FF0000 toma 255 0 0      ;mas elementos de los que debería
+                   (pixrgb-d 0 0 0 255 0 20) ;  00FF00 toma 0 255 0
+                   (pixrgb-d 0 0 0 0 255 10) ;  0000FF toma 0 0 255
+                   (pixrgb-d 255 255 255 255 255 1) ;FFFFFF toma 255 255 255
   ))
 
 (define img3 (image 2 2
@@ -306,11 +372,11 @@
                    (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
   ))
 
-(define img4 (image 3 2
+(define img4 (image 2 2
                    (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0           ;#t
                    (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
                    (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
-                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
+                   ;(pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
   ))
 
 ;(image 5 2 (pixrgb-d  0 0 10 10 10 10) (pixrgb-d  0 1 20 20 20 20) (pixrgb-d 1 0 30 30 30 30) (pixrgb-d 1 1 40 40 40 40))
@@ -321,28 +387,17 @@
                   (pixbit-d 1 1 0 255)
  ))
 
+;(entregar_coordenadas (coordenadas 2 2 0 0 null) (acceder img1 2) (contar (acceder img1 2)) 0 0 null)
+
+;(acceder img1 2)
 
 
 
 
+;'('(1 2 3 4) '(1 2 3 '(6 7 8) 5 6 7 8 9))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;(append (acceder '(((1 2 3 4) (1 2 3 '(6 7 8) 5 6 7 8 9))) 0))
 
 
 
@@ -363,7 +418,7 @@
 ;-----------------------------------OTRAS FUNCIONES-------------------------------------------------------------------
 
 
-
+;(cons 7(cons (acceder(acceder img1 2)0) null))
 
 
 ;Esta función es utilizada para hacer uso del TDA en el archivo main.rkt
