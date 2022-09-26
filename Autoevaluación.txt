@@ -1,0 +1,23 @@
+Requerimientos Funcionales	Evaluación
+TDAs                                1
+image	                            1
+bitmap?                             1
+pixmap?	                            1
+hexmap?	                           0.5
+compressed?	                    1
+flipH	                            1
+flipV	                           0.25
+crop                                0
+imgRGB->imgHex                      0
+histogram                           0
+rotate90                            0
+compress                            0
+edit                                0
+invertColorBit                      0
+invertColorRGB                      0
+adjustChannel                       0
+image->string                       0
+depthLayers                         0
+decompress                          0
+
+

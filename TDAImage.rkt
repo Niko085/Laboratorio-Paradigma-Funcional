@@ -274,22 +274,29 @@
   (cond
     [(not (null? lista)) (entregar_coordenadas (coordenadas (acceder lista 0) (acceder lista 1) 0 0 null) (llamar_inversion (acceder lista 2) (contar (acceder lista 2)) (tamanio lista) (acceder lista 0)) (contar (acceder lista 2)) 0 0 null)]))
 
-(flipH (image 3 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5) (pixbit-d 6 6 6 6) (pixbit-d 7 7 7 7) (pixbit-d 8 8 8 8)))
+;(flipH (image 3 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5) (pixbit-d 6 6 6 6) (pixbit-d 7 7 7 7) (pixbit-d 8 8 8 8)))
 ;1 0 3 2
 
-(flipH (image 2 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5)))
+;(flipH (image 2 3 (pixbit-d 0 0 0 0) (pixbit-d 1 1 1 1 ) (pixbit-d 2 2 2 2) (pixbit-d 3 3 3 3) (pixbit-d 4 4 4 4) (pixbit-d 5 5 5 5)))
 
 ;-------------------------------------------------------------------------------------------------------------------
 
 
 ;-------------------------------------------------------flipV-------------------------------------------------------
-;LLama a la funcion invertir listas 
-(define (agrupar lista cantidad contador ancho)
- (cond
-   [(= contador 0) lista]
-   [else (agrupar (invertir lista cantidad (- cantidad ancho)) (- cantidad ancho) (- contador ancho) ancho)]))
 
-;invierte una imagen horizontalmente
+
+;Forma sub-listas del tamaño que el ancho de la imagen
+(define (sub-listas lista ancho contador lista_aux lista_aux2)
+  (cond
+    [(null? lista) (reverse (cons (reverse lista_aux) lista_aux2))]
+    [(= ancho contador) (sub-listas (cdr lista) ancho 1 (cons (car lista) null)(cons (reverse lista_aux) lista_aux2))]
+    [else (sub-listas (cdr lista) ancho (+ contador 1) (cons (car lista) lista_aux) lista_aux2)]))
+
+(sub-listas '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5) '(6 6 6 6) '(7 7 7 7) '(8 8 8 8) '(9 9 9 9) '(10 10 10 10) '(11 11 11 11)) 4 0 null null)
+
+  
+
+;invierte una imagen verticalmente
 (define (flipV lista)
   (cond                       
     [(not (null? lista)) (llamar_inversion (acceder lista 2) (contar (acceder lista 2)) (tamanio lista (acceder lista 0)))]))
@@ -299,10 +306,12 @@
 ;-------------------------------------------------------------------------------------------------------------------
 
 
+(agrupa 4 0 '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5) '(6 6 6 6) '(7 7 7 7) '(8 8 8 8) '(9 9 9 9) '(10 10 10 10) '(11 11 11 11)) null null)
 
 
 
-(list(cons '(1 2 3)(cons '(4 5 6) (cons '(7 8 9) null))))
+
+;(list(cons '(1 2 3)(cons '(4 5 6) (cons '(7 8 9) null))))
 
 
 
@@ -360,12 +369,12 @@
 ; Tipo de recursion: No se utiliza recursion
 (define img1 (image 2 2
                    (pixrgb-d 0 0 0 255 0 10) ;  FF0000 toma 255 0 0      ;mas elementos de los que debería
-                   (pixrgb-d 0 0 0 255 0 20) ;  00FF00 toma 0 255 0
-                   (pixrgb-d 0 0 0 0 255 10) ;  0000FF toma 0 0 255
-                   (pixrgb-d 255 255 255 255 255 1) ;FFFFFF toma 255 255 255
+                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
+                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
+                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
   ))
 
-(define img3 (image 2 2
+(define img3 (image  2
                    (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0         ;#f
                    (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
                    (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
