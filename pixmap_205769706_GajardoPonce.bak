@@ -1,6 +1,6 @@
 #lang racket
 ; Se requiere el uso del TDA image, TDA bitmap, TDA hexmap y TDA pixmap
-(require "otras_funciones_205769706_GajardoPonce.rkt")
+(require "otras_funciones.rkt")
 
 ; Dominio: posicionx (int) X posiciony (int) X r (int) X g (int) X b (int) X Profundidad (int)
 ; Recorrido: Int

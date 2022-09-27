@@ -1,9 +1,9 @@
 #lang racket
 ; Se requiere el uso del TDA image, TDA bitmap, TDA hexmap y TDA pixmap
-(require "otras_funciones_205769706_GajardoPonce.rkt")
-(require "bitmap_205769706_GajardoPonce.rkt")
-(require "hexmap_205769706_GajardoPonce.rkt")
-(require "pixmap_205769706_GajardoPonce.rkt")
+(require "otras_funciones.rkt")
+(require "bitmap.rkt")
+(require "hexmap.rkt")
+(require "pixmap.rkt")
 
 ;-----------------------------------TDA Image------------------------------------------------------------------------
 
