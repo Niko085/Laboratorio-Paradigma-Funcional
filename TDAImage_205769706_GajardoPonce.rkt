@@ -18,17 +18,7 @@
 
 ;Ej: imagen = lista de pixeles = (pixbit-d 0 0 0 10)(pixbit-d 0 1 1 20)(pixbit-d 1 0 1 10)(pixbit-d 1 1 0 255) -> '((0 0 0 10) (0 1 1 20) (1 0 1 10) (1 1 0 255))
 
-;-----------------------------------CONSTRUCTORES---------------------------------------------------------------------
-
-;bitmap -> pixbit-d
-
-;pixmap -> pixrgb-d
-
-;hexmap -> pixhex-d
-
-
-
-
+;-----------------------------------CONSTRUCTOR---------------------------------------------------------------------
 ; Dominio: Ancho (int) X alto (int) X [pixbit-d* | pixrgb-d* | pixhex]
 ; Recorrido: Image (list)
 ; Descripcion: Crea una imagen en base a pixeles 
@@ -37,11 +27,12 @@
   (list ancho alto pixeles))
 
 
+;Función de pertenencia
 ;----------------------------------------------------Compressed?----------------------------------------------------
-;(tamanio (image 5 3 (pixrgb-d 0 0 255 255 255 0) (pixrgb-d 9 8 255 56 255 1)))
-
-
-;Comprueba que la cantidad de pixeles no haya sido comprimida. Retorna #f si no está comprimida, retorna #t si esta comprimida y da aviso en caso de haber ingresado mas pixeles de los que debería
+; Dominio: image
+; Recorrido: boolean
+; Descripcion: Comprueba que la cantidad de pixeles no haya sido comprimida. Retorna #f si no está comprimida, retorna #t si esta comprimida y da aviso en caso de haber ingresado mas pixeles de los que debería
+; Tipo de recursion: acceder utiliza recursión de cola
 (define (compressed? lista)
   (cond
     [(< (tamanio lista) (contar (acceder lista 2))) print "Hay mas pixeles que el tamanio declarado"]
@@ -52,6 +43,10 @@
 
 ;-------------------------------------------------------------------------------------------------------------------
 
+
+
+
+;----------------------------------------------------------------MODIFICADORES-----------------------------------------------------------
 
 
 ;-------------------------------------------------------flipH-------------------------------------------------------
@@ -144,8 +139,6 @@
     [(= ancho contador) (sub-listas (cdr lista) ancho 1 (cons (car lista) null)(cons (reverse lista_aux) lista_aux2))]
     [else (sub-listas (cdr lista) ancho (+ contador 1) (cons (car lista) lista_aux) lista_aux2)]))
 
-;(sub-listas '('(0 0 0 0) '(1 1 1 1) '(2 2 2 2) '(3 3 3 3) '(4 4 4 4) '(5 5 5 5) '(6 6 6 6) '(7 7 7 7) '(8 8 8 8) '(9 9 9 9) '(10 10 10 10) '(11 11 11 11)) 4 0 null null)
-
   
 ; Dominio: lista (list)
 ; Recorrido: imagen
@@ -195,29 +188,31 @@
 ;-------------------------------------------------------------------------------------------------------------------
 
 
-
-
 ;---------------------------------------------------imgRGB->imgHex--------------------------------------------------
-
-;Transforma un número RGB a Hexadecimal
+; Dominio: color (int) X lista (list) X valor1 (int) X valor2 (int) X contador (int)
+; Recorrido: string
+; Descripcion: Transforma un número RGB a Hexadecimal
+; Tipo de recursion: Recursión de cola
 (define (color->hex color lista_hexadecimal valor1 valor2 contador)
   (cond
     [(< contador 1) (color->hex color lista_hexadecimal (modulo color 16) (modulo (quotient color 16) 16) (+ contador 1))]
     [else (string-append (acceder lista_hexadecimal valor2) (acceder lista_hexadecimal valor1))]))
 
 
-;Cambia el formato de un pixel. Transforma de pixmap a hexmap
+; Dominio: lista (list) X contador (int) X profundidad (int) X r (int) X g (int) X b (int)
+; Recorrido: list
+; Descripcion: Cambia el formato de un pixel. Transforma de pixmap a hexmap
+; Tipo de recursion: Recursión natural
 (define (cambiar_formato lista contador profundidad r g b)
   (cond
     [(< contador 4) (cambiar_formato (eliminar lista (acceder lista 2)) (+ contador 1) profundidad r g b)]
     [else (cons (car lista)(cons (cadr lista)(cons (string-append(color->hex r Hexadecimal 0 0 0) (color->hex g Hexadecimal 0 0 0) (color->hex b Hexadecimal 0 0 0)) (cons profundidad null))))]))
 
-; Dominio: 
-; Recorrido: List
-; Descripcion: Transforma una imagen RGB a HEX
-; Tipo de recursion:
 
-;Entrega pixel por pixel a cambiar_formato para que los modifique
+; Dominio: lista (list) X lista (list)
+; Recorrido: List
+; Descripcion: Entrega pixel por pixel a cambiar_formato para que los modifique
+; Tipo de recursion: Recursión de cola
 (define (lista_a_Hexadecimal lista lista_auxiliar)
   (cond
     [(not(null? lista)) (lista_a_Hexadecimal (cdr lista) (cons (cambiar_formato (car lista) 0 (acceder (car lista) 5) (acceder (car lista) 2) (acceder (car lista) 3) (acceder (car lista) 4)) lista_auxiliar))]
@@ -225,10 +220,10 @@
 
 
 
-; Dominio: 
-; Recorrido: 
-; Descripcion:
-; Tipo de recursion: 
+; Dominio: image
+; Recorrido: image
+; Descripcion: Realiza el llamado a la funcion que transforma los rgb en hex
+; Tipo de recursion: entregar_coordenas utiliza recursión de cola
 (define (imgRGB->imgHex lista)
   (cond
     [(pixmap? lista) (entregar_coordenadas (coordenadas (acceder lista 0) (acceder lista 1) 0 0 null) (lista_a_Hexadecimal (acceder lista 2) null) (contar (acceder lista 2)) 0 0 null)]
@@ -237,38 +232,22 @@
 
 
 
-;------------------------------------------------------Histogram-----------------------------------------------------
-;Retorna una lista con sub-listas. Las sub-listas sigue la estructura ((0 cantidad_de_pixeles_0)(1 cantidad_de_pixeles_1))
-(define (contar_bit lista ceros unos lista_aux)
-  (cond
-    [(null? lista) (cons (list 0 ceros)(cons (list 1 unos) null))]
-    [(= 0 (acceder (acceder lista 0) 2)) (contar_bit (cdr lista) (+ ceros 1) unos lista_aux)]
-    [(= 1 (acceder (acceder lista 0) 2)) (contar_bit (cdr lista) ceros (+ unos 1) lista_aux)]))
-
-(define (Histogram lista)
-  (cond
-    [(bitmap? lista) (contar_bit (acceder lista 2) 0 0 null)]))
-;--------------------------------------------------------------------------------------------------------------------
-
-
-
-
 ;------------------------------------------------------Rotate90-----------------------------------------------------
 
-; Dominio: 
-; Recorrido: 
-; Descripcion:
-; Tipo de recursion: 
+; Dominio: lista (list) X cantidad (int) X contador (int) X lista (list) 
+; Recorrido: lista (list)
+; Descripcion: Enlista los elementos en sub-lista del tamaño contrario al que se había generado previamente
+; Tipo de recursion: Recursión de cola
 (define (enlistar_car lista cantidad contador lista_aux)
   (cond
     [(null? lista) (reverse lista_aux)]
     [(not(= cantidad contador)) (enlistar_car (cdr lista) cantidad (+ contador 1) (cons (acceder(acceder lista 0)0) lista_aux))]))
 
 
-; Dominio: 
+; Dominio: lista (list) X cantidad (int) X contador (int) X lista (list)
 ; Recorrido: 
-; Descripcion:
-; Tipo de recursion: 
+; Descripcion: Enlista los elementos que aun no han sido manipulados con enlistar_car
+; Tipo de recursion: Recursión de cola
 (define (enlistar_cdr lista cantidad contador lista_aux)
   (cond
     [(null? lista) (reverse lista_aux)]
@@ -305,55 +284,27 @@
     [(not (null? lista)) (invertir_filas (llamar_rotacion (sub-listas (acceder lista 2) (acceder lista 0) 0 null null)) 0 (contar (llamar_rotacion (sub-listas (acceder lista 2) (acceder lista 0) 0 null null))) null)]))
 ;--------------------------------------------------------------------------------------------------------------------
 
+;Funcion de pertenecia
+;------------------------------------------------------Histogram-----------------------------------------------------
+; Dominio: lista (list) X ceros (int) X unos (int) X lista (list)
+; Recorrido: lista (list)
+; Descripcion: Retorna una lista con sub-listas. Las sub-listas sigue la estructura ((0 cantidad_de_pixeles_0)(1 cantidad_de_pixeles_1))
+; Tipo de recursion: Recursión de cola
+(define (contar_bit lista ceros unos lista_aux)
+  (cond
+    [(null? lista) (cons (list 0 ceros)(cons (list 1 unos) null))]
+    [(= 0 (acceder (acceder lista 0) 2)) (contar_bit (cdr lista) (+ ceros 1) unos lista_aux)]
+    [(= 1 (acceder (acceder lista 0) 2)) (contar_bit (cdr lista) ceros (+ unos 1) lista_aux)]))
 
+; Dominio: image
+; Recorrido: lista (list)
+; Descripcion: Realiza un histograma de los bits
+; Tipo de recursion: contar_bit utiliza recursión de cola
+(define (Histogram lista)
+  (cond
+    [(bitmap? lista) (contar_bit (acceder lista 2) 0 0 null)]))
+;--------------------------------------------------------------------------------------------------------------------
 
-;------------------------------------------------------------------------------PRUEBAS--------------------------------------------------------------------
-
-
-
-; Dominio: 
-; Recorrido: 
-; Descripcion: Crea una imagen de 2 x 2 del tipo pixmap
-; Tipo de recursion: No se utiliza recursion
-
-
-(define img1 (image 2 2
-                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0         
-                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
-                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
-                   (pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
-  ))
-(define img2 (image 4 4
-                  (pixbit-d 0 0 0 10)
-                  (pixbit-d 0 1 1 20)
-                  (pixbit-d 0 2 1 10)
-                  (pixbit-d 0 3 0 255)
-                  (pixbit-d 1 0 0 255)
-                  (pixbit-d 1 1 0 255)
-                  (pixbit-d 1 2 0 255)
-                  (pixbit-d 1 3 0 255)
-                  (pixbit-d 2 0 0 255)
-                  (pixbit-d 2 1 0 10)
-                  (pixbit-d 2 2 1 20)
-                  (pixbit-d 2 3 1 10)
-                  (pixbit-d 3 0 0 255)
-                  (pixbit-d 3 1 0 255)
-                  (pixbit-d 3 2 0 255)
-                  (pixbit-d 3 3 0 255)
- ))
-
-(define img4 (image 2 2
-                   (pixrgb-d 0 0 255 0 0 10) ;  FF0000 toma 255 0 0           
-                   (pixrgb-d 0 1 0 255 0 20) ;  00FF00 toma 0 255 0
-                   (pixrgb-d 1 0 0 0 255 10) ;  0000FF toma 0 0 255
-                   ;(pixrgb-d 1 1 255 255 255 1) ;FFFFFF toma 255 255 255
-  ))
-
-
-; Dominio: 
-; Recorrido: 
-; Descripcion:
-; Tipo de recursion: 
 
 ;----------------------------------------------------------------------------OTRAS FUNCIONES------------------------------------------------------------------
 
